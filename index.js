@@ -1,6 +1,7 @@
 const cors = require('cors')
 const express = require('express')
 const oracle = require('./DATABASE/oraclequery')
+const file = require('fs')
 const connection = require('./DATABASE/oracleConnection')
 const stripe = require('stripe')('sk_test_51K6d2vSJbqR4cKbk1ZjCZwHaVIMJVsRrrrV6zf4noeuBeEmoCai6XI70aFAz7TqQkAlY6K18te83Zvh52kNuIfKY000ftN9bGF')
 const itemRoute = require('./Routers/itemRoute')
@@ -10,6 +11,8 @@ const app = express()
 const port = 3000
 const nodemailer = require('nodemailer');
 const loginRoute = require('./Routers/login')
+const SqlConnection = require('./DATABASE/sqliteClass')
+const jsonFile = require('jsonfile')
 app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -17,6 +20,7 @@ app.use('/', itemRoute)
 app.use('/category', categoryRoute)
 app.use('/order', orderRoute)
 app.use('/login', loginRoute)
+
 const pay = async () => {
   const cust = await stripe.customers.create({
     email: 'shayanjawed4@gmail.com'
@@ -60,6 +64,13 @@ app.post('/mail', async (req, res) => {
 
 })
 
+app.get('/write', (req, res) => {
+  console.log('Hello')
+  const json = [{ 'message': 'This is message' }]
+  file.readFile('data.json', (err, data) => {
+    res.send(JSON.parse(data))
+  })
+})
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
